@@ -21,6 +21,9 @@ class Convertable a b where
 instance (Functor f, Convertable a b) => Convertable (f a) (f b) where
     convert = fmap convert
 
+instance (Convertable a b, Convertable c d) => Convertable (a, c) (b, d) where
+    convert (a, b) = (convert a, convert b)
+
 instance Convertable J.CompilationUnit Program where
     convert (J.CompilationUnit pkg imps typds) =
         CompilationUnit (convert pkg) (convert imps) (convert typds)
@@ -75,4 +78,5 @@ instance Convertable J.TypeParam GenericParamDecl where
     convert = const GenericParamDecl
 
 instance Convertable J.RefType Type where
-    convert (ClassRefType 
+    convert (J.ClassRefType parts) = ClassType $> parts
+    convert (J.ArrayType typ) = ArrayType $> typ
