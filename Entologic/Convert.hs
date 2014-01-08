@@ -51,7 +51,7 @@ instance Convertable J.ImportDecl Import where
 
 instance Convertable J.TypeDecl TypeDeclaration where
     convert (J.ClassTypeDecl c) = convert c
-    convert (J.InterfaceTypeDecl i) = convert i
+--    convert (J.InterfaceTypeDecl i) = convert i
 
 ($>) :: Convertable a b => (b -> c) -> a -> c
 func $> val = func $ convert val
@@ -59,6 +59,25 @@ func $> val = func $ convert val
 instance Convertable J.ClassDecl TypeDeclaration where
     convert (J.ClassDecl mods name gParams sClass interfs body) =
         TDCls $ Class $> mods $> name $> gParams $> sClass $> interfs $> body
+
+instance Convertable J.ClassBody [Member] where
+    convert (J.ClassBody decls) = convert decls
+
+instance Convertable J.Decl InClassDecl where
+    convert (J.MemberDecl m) = MemberDecl $> m
+    convert (J.InitDecl True b) = StaticInitBlock $> b
+    convert (J.InitDecl False b) = InitBlock $> b
+
+instance Convertable J.MemberDecl where
+    convert (J.FieldDecl mods typ vd) = Field
+    convert (J.MethodDecl mods genParams typ name params exceptions body) =
+        Function $> mods $> typ $> name $> params $> body
+
+instance Convertable J.FormalParam ParamDecl where
+    convert (FormalParam mods typ va name) =
+        ParamDecl $> name $> typ $> mods $> Nothing $> varargs va
+      where varargs True = Just Varargs
+            varargs False = Nothing
 
 #define CV(thing) convert J.thing = thing
 instance Convertable J.Modifier Modifier where
@@ -77,6 +96,24 @@ instance Convertable J.Modifier Modifier where
 instance Convertable J.TypeParam GenericParamDecl where
     convert = const GenericParamDecl
 
+instance Convertable J.TypeArgument GenericParam where
+    convert = const GenericParam
+
+instance Convertable J.Type Type where
+    convert (J.RefType rt) = convert rt
+    convert (J.PrimType t) = PrimType (convert t)
+
 instance Convertable J.RefType Type where
-    convert (J.ClassRefType parts) = ClassType $> parts
+    convert (J.ClassRefType (J.ClassType parts)) = ClassType $> parts
     convert (J.ArrayType typ) = ArrayType $> typ
+
+instance Convertable J.PrimType PrimType where
+    CV(IntT)
+    CV(LongT)
+    CV(ShortT)
+    CV(DoubleT)
+    CV(ByteT)
+    CV(FloatT)
+    CV(CharT)
+    CV(BooleanT)
+
