@@ -17,7 +17,7 @@ main = do
     case jcu of
       Left err -> putStrLn $ "Error: " ++ show err
       Right jcu' -> do
-        putStrLn $ "Before conversion: " ++ show jcu'
+--        putStrLn $ "Before conversion: " ++ show jcu'
         let cu = convert jcu' :: Program
         LBS.hPut stdout $ encode cu
     
