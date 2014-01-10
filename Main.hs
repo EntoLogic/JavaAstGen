@@ -19,5 +19,5 @@ main = do
       Right jcu' -> do
 --        putStrLn $ "Before conversion: " ++ show jcu'
         let cu = convert jcu' :: Program
-        LBS.hPut stdout $ encode cu
+        LBS.hPut stdout $ encode (UAst AstMeta cu)
     
