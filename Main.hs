@@ -6,6 +6,10 @@ import Language.Java.Parser
 import qualified Data.ByteString.Lazy as LBS
 
 import Entologic.Convert
+import Entologic.Ast
+import Entologic.Ast.Json
+
+import Data.Aeson
 
 main = do
     code <- hGetContents stdin
@@ -13,7 +17,7 @@ main = do
     case jcu of
       Left err -> putStrLn $ "Error: " ++ show err
       Right jcu' -> do
-        let cu = convert jcu
-        return ()
---    LBS.hPut $ encode cu 
+        putStrLn $ "Before conversion: " ++ show jcu'
+        let cu = convert jcu' :: Program
+        LBS.hPut stdout $ encode cu
     

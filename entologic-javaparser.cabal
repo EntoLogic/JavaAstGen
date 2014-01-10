@@ -25,6 +25,7 @@ executable entologic-javaparser
                      , containers >=0.5
                      , entologic-lib >=0.1
                      , language-java >=0.2.6
+                     , aeson -any
 
 --  executable dlphrases
 --    main-is:             DlMain.hs
